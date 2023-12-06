@@ -152,7 +152,6 @@ function App() {
         position: toast.POSITION.TOP_LEFT,
         autoClose: 3000,
       });
-      console.log(output);
     } catch (e) {
       alert("Failed to get listing information");
       console.log(e);
