@@ -3,7 +3,11 @@ body, html {
     margin: 0;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(45deg, #9be6ff 0%, rgba(225, 5, 34, 0) 70%) repeat scroll 0% 0%, linear-gradient(135deg, #ffd6ff 10%, rgba(49, 5, 209, 0) 80%) repeat scroll 0% 0%, linear-gradient(225deg, #a0c4ff 10%, rgba(10, 219, 216, 0) 80%) repeat scroll 0% 0%, rgba(0, 0, 0, 0) linear-gradient(315deg, #ffffbc 100%, rgba(9, 245, 5, 0) 70%) repeat scroll 0% 0%;
+    background: linear-gradient(45deg, #9be6ff 0%, rgba(225, 5, 34, 0) 70%), 
+                linear-gradient(135deg, #ffd6ff 10%, rgba(49, 5, 209, 0) 80%), 
+                linear-gradient(225deg, #a0c4ff 10%, rgba(10, 219, 216, 0) 80%), 
+                linear-gradient(315deg, #ffffbc 100%, rgba(9, 245, 5, 0) 70%);
+    background-attachment: fixed;
 }
 
 .centered {
@@ -30,9 +34,8 @@ body, html {
     margin-left: 10px;
 }
 
-/* Adjusting the height of rows */
 #first-row, #third-row {
-    flex: 2; /* Twice as tall as the second row */
+    flex: 2; 
 }
 
 #second-row {
@@ -81,11 +84,11 @@ body, html {
     justify-content: center;
     border-radius: 10px;
     align-items: center;
-    overflow: hidden; /* Optional, in case the image is larger than the container */
+    overflow: hidden; 
     margin-bottom: 10px;
     margin-left: 20px;
-    max-width: 800px; /* Ensures the image is not larger than its container */
-    height: auto; /* Keeps the image aspect ratio */
+    max-width: 800px; 
+    height: auto; 
 }
 
 /* Button CSS taken from https://getcssscan.com/css-buttons-examples */
@@ -135,14 +138,14 @@ body, html {
 
 .input-container {
     display: flex;
-    align-items: start; /* Align items vertically based on content size */
-    justify-content: start; /* Align items horizontally based on content size */
+    align-items: flex-start; 
+    justify-content: flex-start; 
 
 }
 
 .column1 {
     display: flex;
-    flex-direction: column; /* Stack children of column1 vertically */
+    flex-direction: column; 
     flex: 0 0 auto;
 }
 
@@ -153,7 +156,7 @@ body, html {
 
 .column2 {
     display: flex;
-    flex-direction: column; /* Stack children of column1 vertically */
+    flex-direction: column; 
     flex: 0 0 auto;
     margin-left: 3px;
 }
