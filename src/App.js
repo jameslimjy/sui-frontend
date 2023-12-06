@@ -1,185 +1,23 @@
 // react libraries
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
+
+// components
+import MintNewWidget from "./components/MintNewWidget";
+import ListItem from "./components/ListItem";
+import PurchaseListing from "./components/PurchaseListing";
+import TakeProfits from "./components/TakeProfits";
 
 // toastify libraries
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // sui libraries
-import { WalletKitProvider, ConnectButton, useWalletKit } from "@mysten/wallet-kit";
+import { WalletKitProvider, ConnectButton } from "@mysten/wallet-kit";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui.js/client";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
 
-// const PACKAGE_ID = "0xd0d5a4f436c95da6969b3984ba60a5b054aa2a22d2b624a2ff5016b905aa4bb2";
-// const MARKETPLACE_ID = "0xc5da236211d47b306e2c9696877b8808ee990cbd215a03f2977e34e0557f05f4";
-
-function MintNewWidget({ setAccountAddress, packageId }) {
-  const { currentAccount, signAndExecuteTransactionBlock } = useWalletKit();
-
-  useEffect(() => {
-    if (currentAccount?.address) {
-      setAccountAddress(currentAccount.address);
-    }
-  }, [currentAccount, setAccountAddress]);
-
-  const mintNewWidget = async () => {
-    try {
-      // prepare transaction block
-      const txb = new TransactionBlock();
-      txb.moveCall({
-        target: `${packageId}::widget::mint`,
-      });
-
-      // sign and execute transaction block with wallet
-      const output = await signAndExecuteTransactionBlock({
-        transactionBlock: txb,
-        options: { showEffects: true },
-      });
-
-      console.log("output from minting widget:", output);
-
-      toast.success("Successfully minted widget!", {
-        position: toast.POSITION.TOP_LEFT,
-        autoClose: 3000,
-      });
-    } catch (e) {
-      alert("Failed to create widget item");
-      console.log(e);
-    }
-  };
-
-  return (
-    <div>
-      <button className="button" onClick={mintNewWidget}>
-        mint new widget
-      </button>
-    </div>
-  );
-}
-
-function ListItem({ widgetToList, price, packageId, marketplaceId }) {
-  const { signAndExecuteTransactionBlock } = useWalletKit();
-
-  const listItem = async () => {
-    try {
-      // prepare transaction block
-      const txb = new TransactionBlock();
-      txb.moveCall({
-        target: `${packageId}::marketplace::list`,
-        typeArguments: [`${packageId}::widget::Widget`, "0x2::sui::SUI"],
-        arguments: [txb.object(marketplaceId), txb.object(widgetToList), txb.pure(price)],
-      });
-
-      // sign and execute transaction block with wallet
-      const output = await signAndExecuteTransactionBlock({
-        transactionBlock: txb,
-        options: { showEffects: true },
-      });
-
-      // iterate through to get ID of listing
-      const createdObjects = output.effects.created;
-      console.log("createdObjects:", createdObjects);
-
-      toast.success(`Listing created!`, {
-        position: toast.POSITION.TOP_LEFT,
-        autoClose: 3000,
-      });
-    } catch (e) {
-      alert("Failed to list item");
-      console.log(e);
-    }
-  };
-
-  return (
-    <div>
-      <button className="button" onClick={listItem}>
-        list item
-      </button>
-    </div>
-  );
-}
-
-function PurchaseListing({ itemToPurchase, amountSent, packageId, marketplaceId }) {
-  const { signAndExecuteTransactionBlock } = useWalletKit();
-
-  const purchaseListing = async () => {
-    try {
-      // prepare transaction block, split coin
-      const txb = new TransactionBlock();
-      const [coin] = txb.splitCoins(txb.gas, [txb.pure(amountSent)]);
-
-      // prepare transaction block
-      txb.moveCall({
-        target: `${packageId}::marketplace::buy_and_take`,
-        typeArguments: [`${packageId}::widget::Widget`, "0x2::sui::SUI"],
-        arguments: [txb.object(marketplaceId), txb.pure(itemToPurchase), coin],
-      });
-
-      // sign and execute transaction block with wallet
-      const output = await signAndExecuteTransactionBlock({
-        transactionBlock: txb,
-        options: { showEffects: true },
-      });
-
-      console.log("output:", output);
-
-      toast.success(`Successfully purchased!`, {
-        position: toast.POSITION.TOP_LEFT,
-        autoClose: 3000,
-      });
-    } catch (e) {
-      console.log(e);
-      alert("Failed to purchase listing");
-    }
-  };
-  return (
-    <div>
-      <button className="button" onClick={purchaseListing}>
-        purchase item
-      </button>
-    </div>
-  );
-}
-
-function TakeProfits({ packageId, marketplaceId }) {
-  const { signAndExecuteTransactionBlock } = useWalletKit();
-
-  const takeProfits = async () => {
-    try {
-      // prepare transaction block
-      const txb = new TransactionBlock();
-      txb.moveCall({
-        target: `${packageId}::marketplace::take_profits_and_keep`,
-        typeArguments: ["0x2::sui::SUI"],
-        arguments: [txb.object(marketplaceId)],
-      });
-
-      // sign and execute transaction block with wallet
-      const output = await signAndExecuteTransactionBlock({
-        transactionBlock: txb,
-        options: { showEffects: true },
-      });
-
-      console.log("output:", output);
-
-      toast.success(`Successfully took profits!`, {
-        position: toast.POSITION.TOP_LEFT,
-        autoClose: 3000,
-      });
-    } catch (e) {
-      console.log(e);
-      alert("Failed to take profits");
-    }
-  };
-  return (
-    <div>
-      <button className="button" onClick={takeProfits}>
-        take profits
-      </button>
-    </div>
-  );
-}
+// const PACKAGE_ID = "0xec82643bd0dd8067e674debbd5e248d477cabe27a7b01363924ae6d0be83754b";
+// const MARKETPLACE_ID = "0x49a911f07f663afa72b1bbd86ecd8163287500a61d728c17adb1c8e0d14a30ef";
 
 function App() {
   const [marketplaceId, setMarketplaceId] = useState("");
@@ -248,6 +86,7 @@ function App() {
         }
       }
       setOwnedWidgets(widgets);
+
       toast.success(`Successfully refreshed owned widgets!`, {
         position: toast.POSITION.TOP_LEFT,
         autoClose: 3000,
@@ -256,6 +95,19 @@ function App() {
       alert("Failed to refresh");
       console.log(e);
     }
+  };
+
+  const afterListing = async () => {
+    await getOwnedWidgets();
+  };
+
+  const afterPurchase = async () => {
+    await getListingInformation();
+    await getOwnedWidgets();
+  };
+
+  const afterMintingWidget = async () => {
+    await getOwnedWidgets();
   };
 
   const getListingInformation = async () => {
@@ -327,7 +179,7 @@ function App() {
             </div>
             <div class="column">
               <div class="sub-row">
-                <MintNewWidget setAccountAddress={setAccountAddress} packageId={packageId} />
+                <MintNewWidget setAccountAddress={setAccountAddress} packageId={packageId} afterMintingWidget={afterMintingWidget} />
               </div>
               <div class="sub-row">
                 <button className="button" onClick={getOwnedWidgets}>
@@ -338,7 +190,13 @@ function App() {
               <div class="sub-row">
                 <div class="input-container">
                   <div class="column1">
-                    <ListItem widgetToList={widgetToList} price={price} packageId={packageId} marketplaceId={marketplaceId} />
+                    <ListItem
+                      widgetToList={widgetToList}
+                      price={price}
+                      packageId={packageId}
+                      marketplaceId={marketplaceId}
+                      afterListing={afterListing}
+                    />
                   </div>
                   <div class="column column2">
                     <div class="row row1">
@@ -360,7 +218,13 @@ function App() {
               <div class="sub-row">
                 <div class="input-container">
                   <div class="column column1">
-                    <PurchaseListing itemToPurchase={itemToPurchase} amountSent={amountSent} packageId={packageId} marketplaceId={marketplaceId} />
+                    <PurchaseListing
+                      itemToPurchase={itemToPurchase}
+                      amountSent={amountSent}
+                      packageId={packageId}
+                      marketplaceId={marketplaceId}
+                      afterPurchase={afterPurchase}
+                    />
                   </div>
                   <div class="column column2">
                     <div class="row row1">

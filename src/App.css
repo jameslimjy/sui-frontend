@@ -88,6 +88,7 @@ body, html {
     height: auto; /* Keeps the image aspect ratio */
 }
 
+/* Button CSS taken from https://getcssscan.com/css-buttons-examples */
 .button {
     background-color: #e1ecf4;
     border-radius: 10px;
