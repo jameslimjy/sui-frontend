@@ -111,47 +111,52 @@ function App() {
   };
 
   const getListingInformation = async () => {
-    const suiClient = new SuiClient({ url: getFullnodeUrl("devnet") });
+    try {
+      const suiClient = new SuiClient({ url: getFullnodeUrl("devnet") });
 
-    // get marketplace ID
-    const marketplaceObject = await suiClient.getObject({
-      id: marketplaceId,
-      options: { showContent: true },
-    });
-    const marketplaceItemsId = marketplaceObject.data.content.fields.items.fields.id.id;
-
-    // get marketplace items ID
-    const marketplaceItems = await suiClient.getDynamicFields({ parentId: marketplaceItemsId });
-
-    const listingIds = [];
-    // get listing IDs - loop through and save IDs using useState
-    for (let i = 0; i < marketplaceItems.data.length; i++) {
-      listingIds.push(marketplaceItems.data[i].objectId);
-    }
-
-    const output = [];
-    // iterate through all listings and populate output array
-    for (let i = 0; i < listingIds.length; i++) {
-      const currentListing = [];
-      const listingObject = await suiClient.getObject({
-        id: listingIds[i],
+      // get marketplace ID
+      const marketplaceObject = await suiClient.getObject({
+        id: marketplaceId,
         options: { showContent: true },
       });
+      const marketplaceItemsId = marketplaceObject.data.content.fields.items.fields.id.id;
 
-      // save relevant info into an array for displaying on frontend
-      currentListing.push(`listingId: ${listingIds[i]}`);
-      currentListing.push(`askPrice: ${listingObject.data.content.fields.value.fields.ask}`);
-      currentListing.push(`owner: ${listingObject.data.content.fields.value.fields.owner}`);
-      currentListing.push(`widget: ${listingObject.data.content.fields.name}`);
-      output.push(currentListing);
+      // get marketplace items ID
+      const marketplaceItems = await suiClient.getDynamicFields({ parentId: marketplaceItemsId });
+
+      const listingIds = [];
+      // get listing IDs - loop through and save IDs using useState
+      for (let i = 0; i < marketplaceItems.data.length; i++) {
+        listingIds.push(marketplaceItems.data[i].objectId);
+      }
+
+      const output = [];
+      // iterate through all listings and populate output array
+      for (let i = 0; i < listingIds.length; i++) {
+        const currentListing = [];
+        const listingObject = await suiClient.getObject({
+          id: listingIds[i],
+          options: { showContent: true },
+        });
+
+        // save relevant info into an array for displaying on frontend
+        currentListing.push(`listingId: ${listingIds[i]}`);
+        currentListing.push(`askPrice: ${listingObject.data.content.fields.value.fields.ask}`);
+        currentListing.push(`owner: ${listingObject.data.content.fields.value.fields.owner}`);
+        currentListing.push(`widget: ${listingObject.data.content.fields.name}`);
+        output.push(currentListing);
+      }
+
+      setListingInfo(output);
+      toast.success(`Successfully refreshed listings!`, {
+        position: toast.POSITION.TOP_LEFT,
+        autoClose: 3000,
+      });
+      console.log(output);
+    } catch (e) {
+      alert("Failed to get listing information");
+      console.log(e);
     }
-
-    setListingInfo(output);
-    toast.success(`Successfully refreshed listings!`, {
-      position: toast.POSITION.TOP_LEFT,
-      autoClose: 3000,
-    });
-    console.log(output);
   };
 
   return (
